@@ -166,10 +166,10 @@ Return the overlap matrix of `basis`.
 """
 (basis::Basis)(::UniformScaling) = basis(one)
 
-function derop(basis::Basis, o::Integer)
+function derop(::Type{T}, basis::Basis, o::Integer) where T
     m = size(basis.B[end],2)
     k = order(basis.t)
-    D = BandedMatrix{eltype(basis.t)}(undef, m,m, k-1, k-1)
+    D = BandedMatrix{T}(undef, m,m, k-1, k-1)
     symmetric = o == 2 && basis.bl == 0 && basis.br == 0
     for j = 1:m
         for i = max(1,j-k):(symmetric ? j : min(j+k,m))
@@ -178,6 +178,7 @@ function derop(basis::Basis, o::Integer)
     end
     symmetric ? Symmetric(D) : D
 end
+derop(basis::Basis, o::Integer) = derop(eltype(basis.t), basis, o)
 
 locs(basis::Basis) = basis.x
 weights(basis::Basis) = basis.w
